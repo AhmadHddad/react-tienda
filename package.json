@@ -12,7 +12,7 @@
   "repository": "https://github.com/AhmadHddad/react-tienda",
   "description": "React Tienda is a lightweight and intuitive global state management library for React, designed to easily share state across components with minimal setup.",
   "engines": {
-    "node": ">=10"
+    "node": ">= 15.5.4"
   },
   "scripts": {
     "start": "tsdx watch",
