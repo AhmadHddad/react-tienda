@@ -1,5 +1,9 @@
 # React Tienda - Light Weight Global State Management
 
+<div style="display:flex; justify-content:center; padding-bottom:16px;">
+<img src="https://github.com/AhmadHddad/react-tienda/blob/main/icon.jpg?raw=true" alt="react-tienda icon" width="256px" height="256px"/>
+</div>
+
 React Tienda is a simple, light weight yet powerful tool for managing global state in React applications. It allows you to easily share state between components using hooks, minimizing prop drilling and reducing the complexity of passing data between deeply nested components.
 
 *One of the big advantages is the ease of use, its very similar to using the normal useState.*
