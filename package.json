@@ -7,11 +7,12 @@
     "dist"
   ],
   "bugs": "https://github.com/AhmadHddad/react-tienda/issues",
+  "homepage": "https://github.com/AhmadHddad/react-tienda",
   "icon": "https://github.com/AhmadHddad/react-tienda/blob/main/icon.jpg?raw=true",
   "repository": "https://github.com/AhmadHddad/react-tienda",
   "description": "React Tienda is a lightweight and intuitive global state management library for React, designed to easily share state across components with minimal setup.",
   "engines": {
-    "node": ">= 15.5.4"
+    "node": ">=12.20.0"
   },
   "scripts": {
     "start": "tsdx watch",
@@ -22,6 +23,7 @@
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "react": ">=16"
   },
@@ -53,6 +55,12 @@
     "hd-utils": "^1.2.7"
   },
   "keywords": [
+    "react",
+    "state",
+    "manager",
+    "management",
+    "redux",
+    "store",
     "hooks",
     "AhmadHddad",
     "use-h-hooks",
@@ -60,7 +68,6 @@
     "react",
     "tienda",
     "react-tienda",
-    "store",
     "global store",
     "global-store",
     "createGlobalStre"
