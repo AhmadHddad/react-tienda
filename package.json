@@ -4,8 +4,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "bugs": "https://github.com/AhmadHddad/react-tienda/issues",
   "icon": "https://github.com/AhmadHddad/react-tienda/blob/main/icon.jpg?raw=true",
@@ -31,6 +30,7 @@
       "pre-commit": "tsdx lint"
     }
   },
+  "type": "module",
   "prettier": {
     "printWidth": 80,
     "semi": true,
@@ -53,6 +53,19 @@
   "dependencies": {
     "hd-utils": "^1.2.7"
   },
+  "keywords": [
+    "hooks",
+    "AhmadHddad",
+    "use-h-hooks",
+    "useHooks",
+    "react",
+    "tienda",
+    "react-tienda",
+    "store",
+    "global store",
+    "global-store",
+    "createGlobalStre"
+  ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^11.1.6",
     "@types/react": "^18.3.11",
