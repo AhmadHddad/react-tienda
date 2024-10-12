@@ -15,10 +15,10 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsdx build",
+    "build": "tsdx build --format=esm",
     "test": "tsdx test --passWithNoTests",
     "lint": "tsdx lint",
-    "prepare": "tsdx build",
+    "prepare": "yarn run build",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
@@ -30,7 +30,6 @@
       "pre-commit": "tsdx lint"
     }
   },
-  "type": "module",
   "prettier": {
     "printWidth": 80,
     "semi": true,
