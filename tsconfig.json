@@ -4,6 +4,7 @@
     "src",
     "types"
   ],
+  "exclude": ["examples", "vite.config.ts"],
   "compilerOptions": {
     "module": "esnext",
     "lib": [
