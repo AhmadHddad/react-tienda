@@ -209,9 +209,9 @@ export default function createGlobalStore<
 
   useStore.setGlobalState = function(
     newState: Partial<T>,
-    options: SetGlobalStateOptions
+    options?: SetGlobalStateOptions
   ) {
-    if (options.override) {
+    if (options?.override) {
       storeState = joinObjects(storeState, newState);
     }
 
