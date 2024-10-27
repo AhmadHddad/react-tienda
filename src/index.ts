@@ -1,5 +1,5 @@
-import { EventBus, includeKeys, isObject, has } from 'hd-utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { EventBus, includeKeys, isObject, has, joinObjects } from 'hd-utils';
+import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 
 function newObjWithKeys<T>(
   keyList: string[],
@@ -13,12 +13,15 @@ function newObjWithKeys<T>(
   return newObj as T;
 }
 
+type SetGlobalStateOptions = Partial<{
+  override: boolean;
+}>;
+
 type SharedConfigs = Partial<{
   shallowCompareOnSetState: boolean;
 }>;
 
-type GlobalStoreConfig = Partial<{
-}> & SharedConfigs;
+type GlobalStoreConfig = Partial<{}> & SharedConfigs;
 
 type HookOptions = {
   resetStoreState: (all?: boolean) => void;
@@ -28,23 +31,22 @@ type HookConfigs = Partial<{}> & SharedConfigs;
 
 type HookResultOptions<T> = { comparer: (oldState: T, newState: T) => boolean };
 
-
 type SetState<T> = (
   s: Partial<T> | ((oldState: T) => Partial<T>),
   options?: HookResultOptions<T>
 ) => void;
 
-type Actions<Y extends string | number | symbol, T> = Record<Y, (state: T, setStoreState: SetState<T>) => (...args: any) => void>
+type Actions<Y extends string | number | symbol, T> = Record<
+  Y,
+  (state: T, setStoreState: SetState<T>) => (...args: any) => void
+>;
 
 type HookoSecond<T, Y extends string | number | symbol> = {
-  setStoreState: SetState<T>
-  actions: Record<Y, (...args: any) => void>
+  setStoreState: SetState<T>;
+  actions: Record<Y, (...args: any) => void>;
 } & HookOptions;
 
-type HookResult<T, Y extends string | number | symbol> = [
-  T,
-  HookoSecond<T, Y>
-];
+type HookResult<T, Y extends string | number | symbol> = [T, HookoSecond<T, Y>];
 
 const UPDATE_STATE_EVENT = 'UPDATE_STATE';
 
@@ -60,13 +62,17 @@ const UPDATE_STATE_EVENT = 'UPDATE_STATE';
  * return <button onClick={()=> setStoreState({a:3})}>Click me</button>
  * }
  */
-export default function createGlobalStore<T extends Record<string, unknown>, A extends Actions<string, T>>(
+export default function createGlobalStore<
+  T extends Record<string, unknown>,
+  A extends Actions<string, T>
+>(
   initState: T = {} as T,
   actions: A = {} as A,
   storeConfigs?: GlobalStoreConfig
 ) {
-  if (!isObject(initState))
+  if (!isObject(initState)) {
     throw new Error('Error: The initial state should be of type object');
+  }
 
   const oldState = { ...initState };
 
@@ -79,7 +85,10 @@ export default function createGlobalStore<T extends Record<string, unknown>, A e
   type Keys = keyof typeof storeState;
   type ActionKeys = keyof typeof actions;
 
-  function useStore(select?: Keys[], hookConfigs?: HookConfigs): HookResult<T, ActionKeys> {
+  function useStore(
+    select?: Keys[],
+    hookConfigs?: HookConfigs
+  ): HookResult<T, ActionKeys> {
     const { shallowCompareOnSetState } = hookConfigs || {};
     const [componentState, setComponentState] = useState<T>(
       Array.isArray(select)
@@ -90,7 +99,7 @@ export default function createGlobalStore<T extends Record<string, unknown>, A e
     const shallowCompare =
       shallowCompareOnSetState ?? storeConfigs?.shallowCompareOnSetState;
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       const handleStateChange = (updatedState: T) => {
         const newState: Partial<T> = {};
 
@@ -100,8 +109,10 @@ export default function createGlobalStore<T extends Record<string, unknown>, A e
           }
         }
 
-        if (Object.keys(newState).length === 0) return;
-        storeState = { ...storeState, ...newState };
+        if (Object.keys(newState).length === 0) {
+          return;
+        }
+        storeState = joinObjects(storeState, newState);
 
         setComponentState((prev: T) => ({ ...prev, ...newState }));
       };
@@ -117,10 +128,11 @@ export default function createGlobalStore<T extends Record<string, unknown>, A e
       (newState, options?) => {
         if (typeof newState === 'function') {
           const updatedState = newState(componentState);
-          if (!isObject(updatedState))
+          if (!isObject(updatedState)) {
             throw new Error(
               'Error: The return type should be object with the new state'
             );
+          }
 
           storeBus.publish(UPDATE_STATE_EVENT, updatedState);
         } else {
@@ -134,7 +146,9 @@ export default function createGlobalStore<T extends Record<string, unknown>, A e
             options?.comparer &&
             options.comparer(componentState, newState as T);
 
-          if (isEqual) return;
+          if (isEqual) {
+            return;
+          }
 
           if (shallowCompare) {
             const keyList = select || Object.keys(componentState);
@@ -161,25 +175,46 @@ export default function createGlobalStore<T extends Record<string, unknown>, A e
       [select]
     );
 
-
-    const actionsMemo: Record<ActionKeys, ((...args: any[]) => void)> = useMemo(() => {
+    const actionsMemo: Record<
+      ActionKeys,
+      (...args: any[]) => void
+    > = useMemo(() => {
       const newActions: any = {};
 
       for (const actionKey in actions) {
         if (Object.prototype.hasOwnProperty.call(actions, actionKey)) {
           const action = actions[actionKey];
-          newActions[actionKey] = action(storeState, updateState)
+          newActions[actionKey] = action(storeState, updateState);
         }
       }
 
-      return newActions as unknown as Record<ActionKeys, (...args: []) => void>;
-
+      return (newActions as unknown) as Record<
+        ActionKeys,
+        (...args: []) => void
+      >;
     }, [actions, updateState]);
 
-    return [componentState, useMemo(() => ({ setStoreState: updateState, actions: actionsMemo, resetStoreState }), [actionsMemo, resetStoreState])];
+    return [
+      componentState,
+      useMemo(
+        () => ({
+          setStoreState: updateState,
+          actions: actionsMemo,
+          resetStoreState,
+        }),
+        [actionsMemo, resetStoreState]
+      ),
+    ];
   }
 
-  useStore.setGlobalState = function (newState: Partial<T>) {
+  useStore.setGlobalState = function(
+    newState: Partial<T>,
+    options: SetGlobalStateOptions
+  ) {
+    if (options.override) {
+      storeState = joinObjects(storeState, newState);
+    }
+
     storeBus.publish(UPDATE_STATE_EVENT, newState);
   };
 
