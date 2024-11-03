@@ -41,12 +41,12 @@ type Actions<Y extends string | number | symbol, T> = Record<
   (state: T, setStoreState: SetState<T>) => (...args: any) => void
 >;
 
-type HookoSecond<T, Y extends string | number | symbol> = {
+type HookSecond<T, Y extends string | number | symbol> = {
   setStoreState: SetState<T>;
   actions: Record<Y, (...args: any) => void>;
 } & HookOptions;
 
-type HookResult<T, Y extends string | number | symbol> = [T, HookoSecond<T, Y>];
+type HookResult<T, Y extends string | number | symbol> = [T, HookSecond<T, Y>];
 
 const UPDATE_STATE_EVENT = 'UPDATE_STATE';
 
