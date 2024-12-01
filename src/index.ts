@@ -56,6 +56,7 @@ const UPDATE_STATE_EVENT = 'UPDATE_STATE';
 /**
  * @description Will create a global store where state is shared among components that use the returned hook that can be used to set and get the state.
  * @advanced You can enter the global (store scope) state using useStore.getGlobalState() or set the global state useStore.setGlobalState
+ * @author https://github.com/AhmadHddad
  * @example export const useStore = createGlobalStore({a:1, b:2});
  * @returns hook that is used to connect the component with the store.
  * its its really recommended to specify the used store keys in the returned hook (as list of strings) to reduce the component rerendering.
