@@ -1,5 +1,8 @@
 import { EventBus, includeKeys, isObject, has, joinObjects } from 'hd-utils';
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import React,  { useCallback, useMemo, useState } from 'react';
+
+// In case the react version doesn't support useLayoutEffect
+const useEffect = React.useLayoutEffect || React.useEffect;
 
 function newObjWithKeys<T>(
   keyList: string[],
@@ -99,7 +102,7 @@ export default function createGlobalStore<
     const shallowCompare =
       shallowCompareOnSetState ?? storeConfigs?.shallowCompareOnSetState;
 
-    useLayoutEffect(() => {
+      useEffect(() => {
       const handleStateChange = (updatedState: T) => {
         const newState: Partial<T> = {};
 
