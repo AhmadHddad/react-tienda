@@ -1,5 +1,5 @@
 import { EventBus, includeKeys, isObject, has, joinObjects } from 'hd-utils';
-import React,  { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 // In case the react version doesn't support useLayoutEffect
 const useEffect = React.useLayoutEffect || React.useEffect;
@@ -58,6 +58,7 @@ const UPDATE_STATE_EVENT = 'UPDATE_STATE';
  * @advanced You can enter the global (store scope) state using useStore.getGlobalState() or set the global state useStore.setGlobalState
  * @author https://github.com/AhmadHddad
  * @example export const useStore = createGlobalStore({a:1, b:2});
+ * @example export useStore.subscribe((state => {console.log("state is updated", state)})) //subscribe to the store with external callbacks;
  * @returns hook that is used to connect the component with the store.
  * its its really recommended to specify the used store keys in the returned hook (as list of strings) to reduce the component rerendering.
  * @example const Component = () => {
@@ -103,7 +104,7 @@ export default function createGlobalStore<
     const shallowCompare =
       shallowCompareOnSetState ?? storeConfigs?.shallowCompareOnSetState;
 
-      useEffect(() => {
+    useEffect(() => {
       const handleStateChange = (updatedState: T) => {
         const newState: Partial<T> = {};
 
@@ -211,7 +212,7 @@ export default function createGlobalStore<
     ];
   }
 
-  useStore.setGlobalState = function(
+  useStore.setGlobalState = function (
     newState: Partial<T>,
     options?: SetGlobalStateOptions
   ) {
@@ -223,6 +224,10 @@ export default function createGlobalStore<
   };
 
   useStore.getGlobalState = () => storeState;
+
+  useStore.subscribe = (callback: (state: T) => void) => {
+    storeBus.subscribe(UPDATE_STATE_EVENT, callback);
+  };
 
   return useStore;
 }
